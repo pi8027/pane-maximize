@@ -1,7 +1,5 @@
 #!/bin/bash
 
-targetid=
-
 while getopts b: OPT
 do
     case $OPT in
