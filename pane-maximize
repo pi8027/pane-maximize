@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 while getopts b: OPT ; do
     targetid=$OPTARG
@@ -18,10 +18,10 @@ if [ -n "$targetid" ] ; then
     while : ; do read ; done
 elif target=$(echo $pmtable | sed "s/:/\n/g" | \
         grep "\(^$currentid=\|=$currentid$\)" | head -n 1 | grep .) ; then
-    echo $target | IFS== read currentid targetid
-    tmux swap-pane -t $targetid -s $currentid \; \
-         kill-pane -t $targetid \; \
-         setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
+    IFS== ; set -- $target ; tmux \
+        swap-pane -t $2 -s $1 \; \
+        kill-pane -t $2 \; \
+        setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
 elif [ $(tmux list-panes -F "" | wc -l) != 1 ] ; then
     tmux new-window "$0 -b $currentid"
 fi
