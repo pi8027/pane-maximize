@@ -1,25 +1,27 @@
-#!/bin/bash
+#!/bin/zsh
 
 while getopts b: OPT ; do
     targetid=$OPTARG
 done
 
 currentid=$(tmux display-message -p '#{pane_id}')
-tztable=$(tmux showenv | grep tztable | sed "s/^tztable=//")
+pmtable=$(tmux showenv pmtable | sed "s/^pmtable=//")
 
 if [ -n "$targetid" ] ; then
     tmux swap-pane -t $targetid -s $currentid \; \
-         setenv tztable "$tztable:$targetid=$currentid"
+         setenv pmtable "$pmtable:$targetid=$currentid"
+    echo -ne "\033]2;DUMMY PANE\033\\"
+    stty intr undef
     echo "******************************"
     echo "**** this is a dummy pane ****"
     echo "******************************"
-    stty intr undef
     while : ; do read ; done
-elif targets=$(echo $tztable | sed "s/:/\n/g" | tail -n +2 | grep "^$currentid=") ; then
-    targetid=$(echo $targets | sed "s/^.*=//" | head -n 1)
+elif target=$(echo $pmtable | sed "s/:/\n/g" | \
+        grep "\(^$currentid=\|=$currentid$\)" | head -n 1 | grep .) ; then
+    echo $target | IFS== read currentid targetid
     tmux swap-pane -t $targetid -s $currentid \; \
          kill-pane -t $targetid \; \
-         setenv tztable "$(echo $tztable | sed "s/:$currentid=[^:]*//")"
-else
+         setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
+elif [ $(tmux list-panes -F "" | wc -l) != 1 ] ; then
     tmux new-window "$0 -b $currentid"
 fi
