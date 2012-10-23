@@ -5,7 +5,7 @@ while getopts b: OPT ; do
 done
 
 currentid=$(tmux display-message -p '#{pane_id}')
-tztable=$(tmux showenv tztable | sed "s/^tztable=//")
+tztable=$(tmux showenv | grep tztable | sed "s/^tztable=//")
 
 if [ -n "$targetid" ] ; then
     tmux swap-pane -t $targetid -s $currentid \; \
@@ -13,6 +13,7 @@ if [ -n "$targetid" ] ; then
     echo "******************************"
     echo "**** this is a dummy pane ****"
     echo "******************************"
+    stty intr undef
     while : ; do read ; done
 elif targets=$(echo $tztable | sed "s/:/\n/g" | tail -n +2 | grep "^$currentid=") ; then
     targetid=$(echo $targets | sed "s/^.*=//" | head -n 1)
