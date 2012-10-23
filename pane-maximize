@@ -18,7 +18,7 @@ if [ -n "$targetid" ] ; then
     while : ; do read ; done
 elif target=$(echo $pmtable | sed "s/:/\n/g" | \
         grep "\(^$currentid=\|=$currentid$\)" | head -n 1 | grep .) ; then
-    IFS== ; set -- $target ; tmux \
+    set -- $(echo $target | sed "s/=/ /") ; tmux \
         swap-pane -t $2 -s $1 \; \
         kill-pane -t $2 \; \
         setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
