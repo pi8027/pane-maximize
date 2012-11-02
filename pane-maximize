@@ -16,8 +16,8 @@ if [ -n "$targetid" ] ; then
     echo '**** this is a dummy pane ****'
     echo '******************************'
     while : ; do read ; done
-elif target=$(echo $pmtable | sed 's/:/\n/g' | \
-        grep "\(=\|^\)$currentid\(=\|$\)" | head -n 1 | grep .) ; then
+elif target=$(echo $pmtable | tr : "\n" | \
+        grep -E "(=|^)$currentid(=|$)" | head -n 1 | grep .) ; then
     IFS== ; set -- $target ; IFS=' ' ; tmux \
         swap-pane -t $2 -s $1 \; \
         kill-pane -t $2 \; \
