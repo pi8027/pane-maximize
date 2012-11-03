@@ -1,4 +1,5 @@
 #!/bin/bash
+# By Kazuhiko Sakaguchi.  Public domain.
 
 while getopts b: OPT ; do
     targetid=$OPTARG
@@ -12,9 +13,9 @@ if [ -n "$targetid" ] ; then
          setenv pmtable "$pmtable:$targetid=$currentid"
     echo -ne '\033]2;DUMMY PANE\033\\'
     stty intr undef
-    echo '******************************'
-    echo '**** this is a dummy pane ****'
-    echo '******************************'
+    echo '********************'
+    echo '**** dummy pane ****'
+    echo '********************'
     while : ; do read ; done
 elif target=$(echo $pmtable | tr : "\n" | \
         grep -E "(=|^)$currentid(=|$)" | head -n 1 | grep .) ; then
