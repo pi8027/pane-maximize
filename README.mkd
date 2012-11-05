@@ -1,9 +1,10 @@
 # pane-maximize
 
-Maximize and restore pane in tmux 1.7. (incompatible with <=1.6)
+Maximize and restore panes in tmux 1.7. (incompatible with <=1.6)
 
 ## installation
 
-1. Copy `pane-maximize*` from here to your bin/ directory.
-2. Add key binding to your tmux:
+1. Copy `pane-maximize*` from here to your ~/bin/ directory.
+2. Add a key binding to your .tmux.conf:
+
     bind-key m run-shell "pane-maximize -a"
