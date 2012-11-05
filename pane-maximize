@@ -2,8 +2,12 @@
 # By Kazuhiko Sakaguchi. Public domain.
 
 function usage_exit(){
-    echo "Usage: $(echo $0 | sed "s/.*\///") [-adP] [-t target-pane] [-F format]"
-    exit $1
+cat <<EOT
+Usage: $(echo $0 | sed "s/.*\///") [-adP] [-F format] [-t target-pane]
+-a, -d, -P, -F format:   these options are passed to tmux new-window
+-t target-pane:          specify target pane
+EOT
+exit $1
 }
 
 paneid=$(tmux display-message -p '#{pane_id}')
