@@ -17,7 +17,7 @@ nwopts=
 while getopts adPF:t: OPT ; do
     case $OPT in
     t  ) paneid=$OPTARG ;;
-    a  ) argsflag_a=true ;;
+    a  ) argflag_a=true ;;
     d|P) nwopts="-$OPT $nwopts" ;;
     F  ) nwopts="-F $OPTARG $nwopts" ;;
     *  ) usage_exit -1 ;;
@@ -28,7 +28,7 @@ paneid=$(tmux display-message -t $paneid -p '#{pane_id}' || exit -1)
 winid=$(tmux display-message -t $paneid -p '#{window_id}')
 pmtable=$(tmux showenv pmtable | sed 's/^pmtable=//')
 
-$argsflag_a && nwopts="-a -t $winid $nwopts"
+$argflag_a && nwopts="-a -t $winid $nwopts"
 
 if target=$(echo $pmtable | tr : "\n" | \
         grep -E "(=|^)$paneid(=|$)" | head -n 1 | grep .) ; then
@@ -37,5 +37,6 @@ if target=$(echo $pmtable | tr : "\n" | \
              kill-pane -t $2 \; \
              setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
 elif [ $(tmux list-panes -t $winid -F '' | wc -l) != 1 ] ; then
+    echo $nwopts
     tmux new-window $nwopts "\"$0-sub\" $paneid"
 fi
