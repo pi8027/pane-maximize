@@ -1,28 +1,37 @@
 #!/bin/bash
-# By Kazuhiko Sakaguchi.  Public domain.
+# By Kazuhiko Sakaguchi. Public domain.
 
-while getopts b: OPT ; do
-    targetid=$OPTARG
+function usage_exit(){
+    echo "Usage: $(echo $0 | sed "s/.*\///") [-adP] [-t target-pane] [-F format]"
+    exit $1
+}
+
+paneid=$(tmux display-message -p '#{pane_id}')
+argflag_a=false
+nwopts=
+
+while getopts adPF:t: OPT ; do
+    case $OPT in
+    t  ) paneid=$OPTARG ;;
+    a  ) argsflag_a=true ;;
+    d|P) nwopts="-$OPT $nwopts" ;;
+    F  ) nwopts="-F $OPTARG $nwopts" ;;
+    *  ) usage_exit -1 ;;
+    esac
 done
 
-currentid=$(tmux display-message -p '#{pane_id}')
+paneid=$(tmux display-message -t $paneid -p '#{pane_id}' || exit -1)
+winid=$(tmux display-message -t $paneid -p '#{window_id}')
 pmtable=$(tmux showenv pmtable | sed 's/^pmtable=//')
 
-if [ -n "$targetid" ] ; then
-    tmux swap-pane -t $targetid -s $currentid \; \
-         setenv pmtable "$pmtable:$targetid=$currentid"
-    echo -ne '\033]2;DUMMY PANE\033\\'
-    stty intr undef
-    echo '********************'
-    echo '**** dummy pane ****'
-    echo '********************'
-    while : ; do read ; done
-elif target=$(echo $pmtable | tr : "\n" | \
-        grep -E "(=|^)$currentid(=|$)" | head -n 1 | grep .) ; then
-    IFS== ; set -- $target ; IFS=' ' ; tmux \
-        swap-pane -t $2 -s $1 \; \
-        kill-pane -t $2 \; \
-        setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
-elif [ $(tmux list-panes -F '' | wc -l) != 1 ] ; then
-    tmux new-window "$0 -b $currentid"
+$argsflag_a && nwopts="-a -t $winid $nwopts"
+
+if target=$(echo $pmtable | tr : "\n" | \
+        grep -E "(=|^)$paneid(=|$)" | head -n 1 | grep .) ; then
+    IFS== ; set -- $target ; IFS=' ' ; \
+        tmux swap-pane -t $2 -s $1 \; \
+             kill-pane -t $2 \; \
+             setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
+elif [ $(tmux list-panes -t $winid -F '' | wc -l) != 1 ] ; then
+    tmux new-window $nwopts "\"$0-sub\" $paneid"
 fi
