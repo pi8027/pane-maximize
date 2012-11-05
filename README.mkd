@@ -1,0 +1,3 @@
+# pane-maximize
+
+maximize/restore pane in tmux 1.7. (incompatible with <=1.6)
