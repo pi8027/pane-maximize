@@ -38,4 +38,6 @@ if target=$(echo $pmtable | tr : "\n" | \
              setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
 elif [ $(tmux list-panes -t $winid -F '' | wc -l) != 1 ] ; then
     tmux new-window $nwopts "\"$0-sub\" $paneid"
+else
+    tmux display-message "This pane is already maximized."
 fi
