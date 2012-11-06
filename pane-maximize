@@ -37,6 +37,5 @@ if target=$(echo $pmtable | tr : "\n" | \
              kill-pane -t $2 \; \
              setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
 elif [ $(tmux list-panes -t $winid -F '' | wc -l) != 1 ] ; then
-    echo $nwopts
     tmux new-window $nwopts "\"$0-sub\" $paneid"
 fi
