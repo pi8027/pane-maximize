@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # By Kazuhiko Sakaguchi. Public domain.
 
-function usage_exit(){
+usage_exit(){
 cat <<EOT >&2
 Usage: $(basename $0) [-adP] [-F format] [-t target-pane]
 -a, -d, -P, -F format:   these options are passed to tmux new-window
@@ -22,24 +22,24 @@ done
 
 # unique pane ID
 upaneid=$(tmux display-message \
-    $([[ -n $paneid ]] && echo "-t $paneid") -p '#{pane_id}')
+    $([ -n "$paneid" ] && echo "-t $paneid") -p '#{pane_id}')
 winid=$(tmux display-message -t "$upaneid" -p '#{window_id}')
 pmtable=$(tmux showenv pmtable 2>/dev/null | sed '1 s/^pmtable=//')
 
-[[ -z $upaneid ]] || [[ -z $winid ]] && exit 1
+[ -z "$upaneid" ] || [ -z "$winid" ] && exit 1
 
-[[ -n $optflag_a ]] && nwopts="-a -t $winid $nwopts"
+[ -n "$optflag_a" ] && nwopts="-a -t $winid $nwopts"
 
 target=$(echo $pmtable | tr : '\n' | grep -E "(=|^)$upaneid(=|$)" | head -n 1)
 
-if [[ -n $target ]] ; then
+if [ -n "$target" ] ; then
     set -- ${target/=/ } ; tmux \
         swap-pane -t $2 -s $1 \; \
         kill-pane -t $2 \; \
         setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
-elif [[ $(tmux list-panes -t $winid | wc -l) != 1 ]] ; then
+elif [ $(tmux list-panes -t $winid | wc -l) != 1 ] ; then
     tmux new-window $nwopts "\"$0-sub\" $upaneid"
 else
-    tmux display-message 'This pane is already maximized.' >&2
+    tmux display-message 'This pane is already maximized.'
     exit 1
 fi

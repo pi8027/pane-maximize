@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # By Kazuhiko Sakaguchi. Public domain.
 
 pmtable=$(tmux showenv pmtable | sed 's/^pmtable=//')
