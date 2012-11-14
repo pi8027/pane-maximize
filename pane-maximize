@@ -37,7 +37,7 @@ if [[ -n $target ]] ; then
         swap-pane -t $2 -s $1 \; \
         kill-pane -t $2 \; \
         setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
-elif [[ $(tmux list-panes -t $winid -F '' | wc -l) != 1 ]] ; then
+elif [[ $(tmux list-panes -t $winid | wc -l) != 1 ]] ; then
     tmux new-window $nwopts "\"$0-sub\" $upaneid"
 else
     tmux display-message 'This pane is already maximized.' >&2
