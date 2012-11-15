@@ -1,10 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 # By Kazuhiko Sakaguchi. Public domain.
 
 pmtable=$(tmux showenv pmtable 2>/dev/null | sed 's/^pmtable=//')
 tmux swap-pane -s $1 -t $TMUX_PANE \; \
      setenv pmtable "$pmtable:$1=$TMUX_PANE"
-echo -ne '\033]2;DUMMY PANE\033\\'
+env echo -ne '\033]2;DUMMY PANE\033\\'
 stty intr undef
 echo '********************'
 echo '**** dummy pane ****'
