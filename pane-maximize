@@ -32,13 +32,13 @@ pmtable=$(tmux showenv pmtable 2>/dev/null | sed '1 s/^pmtable=//')
 
 [ -n "$optflag_a" ] && nwopts="-a -t $winid $nwopts"
 
-target=$(echo $pmtable | tr : '\n' | grep -E "(=|^)$upaneid(=|$)" | head -n 1)
+target=$(echo $pmtable | tr , '\n' | grep -E "( |^)$upaneid( |$)" | head -n 1)
 
 if [ -n "$target" ] ; then
-    set -- $(echo ${target} | sed "s/=/ /") ; tmux \
+    set -- ${target} ; tmux \
         swap-pane -t $2 -s $1 \; \
         kill-pane -t $2 \; \
-        setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
+        setenv pmtable "$(echo $pmtable | sed "s/,$target//")"
 elif [ $(tmux list-panes -t $winid | wc -l) != 1 ] ; then
     tmux new-window $nwopts "\"$0-sub\" $upaneid"
 else
