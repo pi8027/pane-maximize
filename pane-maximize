@@ -4,8 +4,10 @@
 usage_exit(){
 cat <<EOT >&2
 Usage: $(basename $0) [-adP] [-F format] [-t target-pane]
--a, -d, -P, -F format:   these options are passed to tmux new-window
--t target-pane:          specify target pane
+-d, -P, -F format: these options are passed to tmux new-window
+-a:                insert the maximized window at the next index up from the
+                   original position
+-t target-pane:    specify target pane
 EOT
 exit 1
 }
