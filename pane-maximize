@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 # By Kazuhiko Sakaguchi. Public domain.
 
 usage_exit(){
@@ -33,7 +33,7 @@ pmtable=$(tmux showenv pmtable 2>/dev/null | sed '1 s/^pmtable=//')
 target=$(echo $pmtable | tr : '\n' | grep -E "(=|^)$upaneid(=|$)" | head -n 1)
 
 if [ -n "$target" ] ; then
-    set -- ${target/=/ } ; tmux \
+    set -- $(echo ${target} | sed "s/=/ /") ; tmux \
         swap-pane -t $2 -s $1 \; \
         kill-pane -t $2 \; \
         setenv pmtable "$(echo $pmtable | sed "s/:$target//")"
