@@ -16,8 +16,8 @@ while getopts adPF:t: OPT ; do
     case $OPT in
     t  ) paneid=$OPTARG ;;
     a  ) optflag_a=true ;;
-    d|P) nwopts="-$OPT $nwopts" ;;
-    F  ) nwopts="-F $OPTARG $nwopts" ;;
+    F  ) optflag_F=true ; optarg_F=$OPTARG ;;
+    d|P) nwopts="$nwopts -$OPT" ;;
     *  ) usage_exit ;;
     esac
 done
@@ -30,7 +30,7 @@ pmtable=$(tmux showenv pmtable 2>/dev/null | sed '1 s/^pmtable=//')
 
 [ -z "$upaneid" ] || [ -z "$winid" ] && exit 1
 
-[ -n "$optflag_a" ] && nwopts="-a -t $winid $nwopts"
+[ -n "$optflag_a" ] && nwopts="$nwopts -a -t $winid"
 
 target=$(echo $pmtable | tr , '\n' | grep -E "( |^)$upaneid( |$)" | head -n 1)
 
@@ -39,9 +39,11 @@ if [ -n "$target" ] ; then
         swap-pane -t $2 -s $1 \; \
         kill-pane -t $2 \; \
         setenv pmtable "$(echo $pmtable | sed "s/,$target//")"
-elif [ $(tmux list-panes -t $winid | wc -l) != 1 ] ; then
-    tmux new-window $nwopts "\"$0-sub\" $upaneid"
-else
+elif [ $(tmux list-panes -t $winid | wc -l) = 1 ] ; then
     tmux display-message 'This pane is already maximized.'
     exit 1
+elif [ -n "$optflag_F" ] ; then
+    tmux new-window $nwopts -F "$optarg_F" "\"$0-sub\" $upaneid"
+else
+    tmux new-window $nwopts "\"$0-sub\" $upaneid"
 fi
