@@ -33,23 +33,20 @@ while getopts adPF:t: OPT ; do
     esac
 done
 
-paneid=`tmux display-message ${optarg_t:+"-t $optarg_t"} -p '#{pane_id}'`
-winid=`tmux display-message -t "$paneid" -p '#{window_id}'`
-[ -z "$paneid" ] || [ -z "$winid" ] && exit 1
+paneid=`tmux display-message -p ${optarg_t:+-t $optarg_t} '#{pane_id}'`
+[ -z "$paneid" ] && exit 1
 
 pmtable=`tmux showenv pmtable 2> /dev/null | sed '1 s/^pmtable=//'`
 target=`echo $pmtable | tr , '\n' | grep -E "( |^)$paneid( |$)" | head -n 1`
 
 if [ -n "$target" ] ; then
-    set -- ${target} ; tmux \
-        swap-pane -t $2 -s $1 \; \
-        kill-pane -t $2 \; \
-        setenv pmtable "`echo $pmtable | sed "s/,$target//"`"
-elif [ `tmux list-panes -t $winid | wc -l` != 1 ] ; then
-    result=`tmux new-window \
-        ${optflag_a:+-a -t $winid} ${optflag_d:+-d} \
-        -P -F "#{pane_id}\n$optarg_F" \
-        "DUMMY_PANE_MODE=true \"$0\""`
+    set -- ${target}
+    tmux swap-pane -t $2 -s $1 \; \
+         kill-pane -t $2 \; \
+         setenv pmtable "`echo $pmtable | sed "s/,$target//"`"
+elif [ `tmux list-panes -t $paneid | wc -l` != 1 ] ; then
+    result=`tmux new-window ${optflag_a:+-a -t $paneid} ${optflag_d:+-d} \
+        -P -F "#{pane_id}\n$optarg_F" "DUMMY_PANE_MODE=true \"$0\""`
     [ -n "$optflag_P" ] && echo $result | tail -n +2
     npaneid=`echo $result | head -n 1`
     tmux swap-pane -s $paneid -t $npaneid \; \
