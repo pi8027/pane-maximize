@@ -46,9 +46,9 @@ if [ -n "$target" ] ; then
          setenv pmtable "`echo $pmtable | sed "s/,$target//"`"
 elif [ `tmux list-panes -t $paneid | wc -l` != 1 ] ; then
     result=`tmux new-window ${optflag_a:+-a -t $paneid} ${optflag_d:+-d} \
-        -P -F "#{pane_id}\n$optarg_F" "DUMMY_PANE_MODE=true \"$0\""`
+        -P -F "#{pane_id}:$optarg_F" "DUMMY_PANE_MODE=true \"$0\""`
     [ -n "$optflag_P" ] && echo $result | tail -n +2
-    npaneid=`echo $result | head -n 1`
+    npaneid=`echo $result | tr : '\n' | head -n 1`
     tmux swap-pane -s $paneid -t $npaneid \; \
          setenv pmtable "$pmtable,$paneid $npaneid"
 else
