@@ -1,6 +1,8 @@
 # pane-maximize
 
-Maximize and restore panes in tmux 1.7. (incompatible with <=1.6)
+Maximize and restore panes in tmux 1.7 and later.
+
+Now you can use `resize-pane -Z` with tmux 1.8 and later.  This script provides same function.
 
 ## installation
 
